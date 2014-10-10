@@ -1,4 +1,4 @@
-Project_Nahgem
+Project_Nagem
 ==============
 
-Project for Undergraduate student Meghan
+Project for Undergraduate student Megan
