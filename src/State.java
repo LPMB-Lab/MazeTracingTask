@@ -1,0 +1,8 @@
+enum State
+{
+	PAUSE,
+	IDLE,
+	IN_TRIAL,
+	COMPLETED,
+	COUNTDOWN,
+};
