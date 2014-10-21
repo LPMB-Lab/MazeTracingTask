@@ -5,9 +5,11 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 public class drawWindow extends JPanel implements MouseListener
@@ -16,11 +18,24 @@ public class drawWindow extends JPanel implements MouseListener
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final int STATE_POSITION = 105;
+	
 	Dimension screenSize;
 	RenderingHints rh;
+		
+	State m_State;
+	State m_RecoveryState;
+	boolean m_bIsPressed;
+	boolean m_bIsPaused;
 	
 	Timer m_Timer;
-	State m_State;
+	Button startButton;
+	Button pauseButton;
+	Button restartButton;
+	Button quitButton;
+	Button saveButton;
+	
+	long m_lStartTime;
 	int m_iGlobalTimer;
 	
 	drawWindow()
@@ -28,15 +43,28 @@ public class drawWindow extends JPanel implements MouseListener
 		screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setSize((int)screenSize.getWidth(),(int)screenSize.getHeight());
 		addMouseListener(this);
+		
+		try {
+			startButton = new Button(ImageIO.read(getClass().getResource("images/startButton.png")), 5, 5);
+			pauseButton = new Button(ImageIO.read(getClass().getResource("images/pauseButton.png")), 100, 5);
+			restartButton = new Button(ImageIO.read(getClass().getResource("images/restartButton.png")), 195, 5);
+			quitButton = new Button(ImageIO.read(getClass().getResource("images/quitButton.png")), 290, 5);
+			saveButton = new Button(ImageIO.read(getClass().getResource("images/saveButton.png")), 385, 5);
+		} catch (IOException e) {e.printStackTrace();}
 
 		Reset();
 	}
 	
 	void Reset()
 	{
-		m_iGlobalTimer = 0;
-		m_Timer = new Timer();
+		if (m_Timer != null)
+			m_Timer.cancel();
+			
 		m_State = State.IDLE;
+		m_Timer = new Timer();
+		m_bIsPressed = false;
+		m_bIsPaused = false;
+		m_iGlobalTimer = 0;
 	}
 	class updateTask extends TimerTask
 	{
@@ -75,8 +103,29 @@ public class drawWindow extends JPanel implements MouseListener
 		rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         rh.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHints(rh);
-		
-		g2d.drawString("TEST",  50,  50);
+        
+        switch (m_State)
+        {
+        	case IDLE:
+        		g2d.drawImage(startButton.getImage(), startButton.getX(),  startButton.getY(),  null);
+        		break;
+			case COMPLETED:
+				break;
+			case COUNTDOWN:
+				g2d.drawString("Countdown to begin in " + m_iGlobalTimer + " seconds", 5, STATE_POSITION);
+				break;
+			case IN_TRIAL:
+				break;
+			case PAUSE:
+				break;
+			default:
+				break;
+        }
+        
+        g2d.drawImage(pauseButton.getImage(), pauseButton.getX(), pauseButton.getY(), null);
+        g2d.drawImage(restartButton.getImage(), restartButton.getX(), restartButton.getY(), null);
+        g2d.drawImage(quitButton.getImage(), quitButton.getX(), quitButton.getY(), null);
+        g2d.drawImage(saveButton.getImage(), saveButton.getX(), saveButton.getY(), null);
 	}
 	@Override
     public void paintComponent(Graphics g)
@@ -85,33 +134,48 @@ public class drawWindow extends JPanel implements MouseListener
         doDrawing(g);
     }
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		// TODO Auto-generated method stub
+	public void mouseClicked(MouseEvent e)
+	{
+		int x = e.getX();
+		int y = e.getY();
 		
+		if (startButton.isPressed(x, y))		{StartSimulation();}
+		else if (pauseButton.isPressed(x, y))	{PauseSimulation();}
+		else if (quitButton.isPressed(x, y))	{System.exit(0);}
+		else if (restartButton.isPressed(x, y))	{Reset();}
+		else if (saveButton.isPressed(x, y))	{ExportFile();}
+	}
+	private void StartSimulation()
+	{
+		countDownToState(5, State.IN_TRIAL);
+	}
+	private void ExportFile()
+	{
+	}
+	private void PauseSimulation()
+	{
+		if (m_bIsPaused)
+		{
+			m_bIsPaused = false;
+			if (m_RecoveryState == State.COUNTDOWN)
+				countDownToState(5, State.IN_TRIAL);
+			else
+				m_State = m_RecoveryState;
+		}
+		else
+		{
+			m_bIsPaused = true;
+			m_RecoveryState = m_State;
+			m_State = State.PAUSE;
+		}
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void mouseEntered(MouseEvent e) {}
 	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void mouseExited(MouseEvent e) {}
 	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void mousePressed(MouseEvent e) {m_bIsPressed = true;}
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	public void mouseReleased(MouseEvent e) {m_bIsPressed = false;}
 }

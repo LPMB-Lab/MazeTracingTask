@@ -12,7 +12,7 @@ public class mainWindow extends JFrame
 	public mainWindow()
 	{	
 		setTitle("Project Nahgem");
-        setSize(1280, 800);
+		add(new drawWindow());
         setExtendedState(JFrame.MAXIMIZED_BOTH); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
