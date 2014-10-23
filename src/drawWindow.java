@@ -8,6 +8,7 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -19,6 +20,8 @@ public class drawWindow extends JPanel implements MouseListener
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final int STATE_POSITION = 105;
+	private static final int CIRCLE_DIAMETER = 10;
+	private static final int DIFFICULTY = 5;
 	
 	Dimension screenSize;
 	RenderingHints rh;
@@ -27,6 +30,8 @@ public class drawWindow extends JPanel implements MouseListener
 	State m_RecoveryState;
 	boolean m_bIsPressed;
 	boolean m_bIsPaused;
+	
+	Vector<Trial> m_vTrials = new Vector<Trial>();
 	
 	Timer m_Timer;
 	Button startButton;
@@ -65,6 +70,14 @@ public class drawWindow extends JPanel implements MouseListener
 		m_bIsPressed = false;
 		m_bIsPaused = false;
 		m_iGlobalTimer = 0;
+		
+		m_vTrials.clear();
+		
+		for (int i = 0; i < 1; i++)
+		{
+			Trial myTrial = new Trial(DIFFICULTY);
+			m_vTrials.add(myTrial);
+		}
 	}
 	class updateTask extends TimerTask
 	{
@@ -88,7 +101,16 @@ public class drawWindow extends JPanel implements MouseListener
 					m_iGlobalTimer--;
 				}
 			}
+			
+			if (m_State == State.IN_TRIAL)
+					UpdateGraphics();
 		}
+	}
+	private void UpdateGraphics()
+	{
+		Graphics g;
+		g = getGraphics();
+		paint(g);
 	}
     private void countDownToState(int timer, State state)
     {
@@ -115,6 +137,7 @@ public class drawWindow extends JPanel implements MouseListener
 				g2d.drawString("Countdown to begin in " + m_iGlobalTimer + " seconds", 5, STATE_POSITION);
 				break;
 			case IN_TRIAL:
+				
 				break;
 			case PAUSE:
 				break;
@@ -126,6 +149,15 @@ public class drawWindow extends JPanel implements MouseListener
         g2d.drawImage(restartButton.getImage(), restartButton.getX(), restartButton.getY(), null);
         g2d.drawImage(quitButton.getImage(), quitButton.getX(), quitButton.getY(), null);
         g2d.drawImage(saveButton.getImage(), saveButton.getX(), saveButton.getY(), null);
+        
+        for (int i = 0; i < m_vTrials.size(); i++)
+        {
+        	Trial myTrial = m_vTrials.get(i);
+        	Point2D[] m_aPointsArray = myTrial.getPointsArray();
+        	
+        	for (int j = 0; j < m_aPointsArray.length; j++)
+        		g2d.drawOval(m_aPointsArray[j].getX(), m_aPointsArray[j].getY(), CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+        }
 	}
 	@Override
     public void paintComponent(Graphics g)
