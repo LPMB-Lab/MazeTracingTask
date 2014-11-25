@@ -1,3 +1,4 @@
+import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -15,12 +16,8 @@ import javax.swing.JPanel;
 
 public class drawWindow extends JPanel implements MouseListener
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private static final int STATE_POSITION = 105;
-	private static final int CIRCLE_DIAMETER = 10;
 	private static final int DIFFICULTY = 5;
 	
 	Dimension screenSize;
@@ -136,8 +133,7 @@ public class drawWindow extends JPanel implements MouseListener
 			case COUNTDOWN:
 				g2d.drawString("Countdown to begin in " + m_iGlobalTimer + " seconds", 5, STATE_POSITION);
 				break;
-			case IN_TRIAL:
-				
+			case IN_TRIAL:				
 				break;
 			case PAUSE:
 				break;
@@ -150,13 +146,19 @@ public class drawWindow extends JPanel implements MouseListener
         g2d.drawImage(quitButton.getImage(), quitButton.getX(), quitButton.getY(), null);
         g2d.drawImage(saveButton.getImage(), saveButton.getX(), saveButton.getY(), null);
         
+        
+        int screenWidth = (int) screenSize.getWidth();
+        int screenHeight = (int) screenSize.getHeight();
+        
+        g2d.setStroke(new BasicStroke(10));
+        
         for (int i = 0; i < m_vTrials.size(); i++)
         {
         	Trial myTrial = m_vTrials.get(i);
         	Point2D[] m_aPointsArray = myTrial.getPointsArray();
         	
-        	for (int j = 0; j < m_aPointsArray.length; j++)
-        		g2d.drawOval(m_aPointsArray[j].getX(), m_aPointsArray[j].getY(), CIRCLE_DIAMETER, CIRCLE_DIAMETER);
+        	for (int j = 0; j < m_aPointsArray.length-1; j++)
+        		g2d.drawLine(m_aPointsArray[j].getX()*screenWidth/100, m_aPointsArray[j].getY()*screenHeight/100, m_aPointsArray[j+1].getX()*screenWidth/100, m_aPointsArray[j+1].getY()*screenHeight/100 );
         }
 	}
 	@Override
