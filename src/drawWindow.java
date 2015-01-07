@@ -24,12 +24,10 @@ public class drawWindow extends JPanel implements MouseListener
 	RenderingHints rh;
 		
 	State m_State;
-	State m_RecoveryState;
 	boolean m_bIsPressed;
 	
 	Vector<Trial> m_vTrials = new Vector<Trial>();
 	
-	Timer m_Timer;
 	Button startButton;
 	Button restartButton;
 	Button quitButton;
@@ -55,12 +53,8 @@ public class drawWindow extends JPanel implements MouseListener
 	}
 	
 	void Reset()
-	{
-		if (m_Timer != null)
-			m_Timer.cancel();
-			
+	{		
 		m_State = State.IDLE;
-		m_Timer = new Timer();
 		m_bIsPressed = false;
 		m_iGlobalTimer = 0;
 		
@@ -72,45 +66,12 @@ public class drawWindow extends JPanel implements MouseListener
 			m_vTrials.add(myTrial);
 		}
 	}
-	class updateTask extends TimerTask
-	{
-    	State state;
-    	
-    	updateTask(State state) {this.state = state;}
-		public void run()
-		{
-			if (m_State != State.COUNTDOWN)
-				m_State = state;
-			
-			if (m_State == State.COUNTDOWN)
-			{
-				if (m_iGlobalTimer == 0)
-				{
-					m_State = state;
-				}
-				else
-				{
-					m_Timer.schedule(new updateTask(State.IN_TRIAL), 1000);
-					m_iGlobalTimer--;
-				}
-			}
-			
-			if (m_State == State.IN_TRIAL)
-					UpdateGraphics();
-		}
-	}
 	private void UpdateGraphics()
 	{
 		Graphics g;
 		g = getGraphics();
 		paint(g);
 	}
-    private void countDownToState(int timer, State state)
-    {
-    	m_iGlobalTimer = timer;
-    	m_State = State.COUNTDOWN;
-    	m_Timer.schedule(new updateTask(state), 1000);
-    }
 	void doDrawing(Graphics g)
 	{
 		Graphics2D g2d = (Graphics2D) g;
@@ -173,7 +134,6 @@ public class drawWindow extends JPanel implements MouseListener
 	}
 	private void StartSimulation()
 	{
-		countDownToState(5, State.IN_TRIAL);
 	}
 	private void ExportFile()
 	{
