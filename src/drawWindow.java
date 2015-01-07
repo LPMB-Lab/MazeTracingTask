@@ -26,13 +26,11 @@ public class drawWindow extends JPanel implements MouseListener
 	State m_State;
 	State m_RecoveryState;
 	boolean m_bIsPressed;
-	boolean m_bIsPaused;
 	
 	Vector<Trial> m_vTrials = new Vector<Trial>();
 	
 	Timer m_Timer;
 	Button startButton;
-	Button pauseButton;
 	Button restartButton;
 	Button quitButton;
 	Button saveButton;
@@ -48,7 +46,6 @@ public class drawWindow extends JPanel implements MouseListener
 		
 		try {
 			startButton = new Button(ImageIO.read(getClass().getResource("images/startButton.png")), 5, 5);
-			pauseButton = new Button(ImageIO.read(getClass().getResource("images/pauseButton.png")), 100, 5);
 			restartButton = new Button(ImageIO.read(getClass().getResource("images/restartButton.png")), 195, 5);
 			quitButton = new Button(ImageIO.read(getClass().getResource("images/quitButton.png")), 290, 5);
 			saveButton = new Button(ImageIO.read(getClass().getResource("images/saveButton.png")), 385, 5);
@@ -65,12 +62,11 @@ public class drawWindow extends JPanel implements MouseListener
 		m_State = State.IDLE;
 		m_Timer = new Timer();
 		m_bIsPressed = false;
-		m_bIsPaused = false;
 		m_iGlobalTimer = 0;
 		
 		m_vTrials.clear();
 		
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 35; i++)
 		{
 			Trial myTrial = new Trial(DIFFICULTY);
 			m_vTrials.add(myTrial);
@@ -83,7 +79,7 @@ public class drawWindow extends JPanel implements MouseListener
     	updateTask(State state) {this.state = state;}
 		public void run()
 		{
-			if (m_State != State.PAUSE && m_State != State.COUNTDOWN)
+			if (m_State != State.COUNTDOWN)
 				m_State = state;
 			
 			if (m_State == State.COUNTDOWN)
@@ -135,13 +131,10 @@ public class drawWindow extends JPanel implements MouseListener
 				break;
 			case IN_TRIAL:				
 				break;
-			case PAUSE:
-				break;
 			default:
 				break;
         }
         
-        g2d.drawImage(pauseButton.getImage(), pauseButton.getX(), pauseButton.getY(), null);
         g2d.drawImage(restartButton.getImage(), restartButton.getX(), restartButton.getY(), null);
         g2d.drawImage(quitButton.getImage(), quitButton.getX(), quitButton.getY(), null);
         g2d.drawImage(saveButton.getImage(), saveButton.getX(), saveButton.getY(), null);
@@ -174,9 +167,8 @@ public class drawWindow extends JPanel implements MouseListener
 		int y = e.getY();
 		
 		if (startButton.isPressed(x, y))		{StartSimulation();}
-		else if (pauseButton.isPressed(x, y))	{PauseSimulation();}
 		else if (quitButton.isPressed(x, y))	{System.exit(0);}
-		else if (restartButton.isPressed(x, y))	{Reset();}
+		else if (restartButton.isPressed(x, y))	{Reset(); UpdateGraphics();}
 		else if (saveButton.isPressed(x, y))	{ExportFile();}
 	}
 	private void StartSimulation()
@@ -185,23 +177,6 @@ public class drawWindow extends JPanel implements MouseListener
 	}
 	private void ExportFile()
 	{
-	}
-	private void PauseSimulation()
-	{
-		if (m_bIsPaused)
-		{
-			m_bIsPaused = false;
-			if (m_RecoveryState == State.COUNTDOWN)
-				countDownToState(5, State.IN_TRIAL);
-			else
-				m_State = m_RecoveryState;
-		}
-		else
-		{
-			m_bIsPaused = true;
-			m_RecoveryState = m_State;
-			m_State = State.PAUSE;
-		}
 	}
 
 	@Override
