@@ -1,6 +1,3 @@
-enum State
-{
-	IDLE,
-	IN_TRIAL,
-	COMPLETED,
+enum State {
+	IDLE, IN_TRIAL, COMPLETED,
 };
