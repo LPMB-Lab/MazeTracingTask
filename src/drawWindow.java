@@ -44,9 +44,9 @@ public class drawWindow extends JPanel implements MouseListener
 		
 		try {
 			startButton = new Button(ImageIO.read(getClass().getResource("images/startButton.png")), 5, 5);
-			restartButton = new Button(ImageIO.read(getClass().getResource("images/restartButton.png")), 195, 5);
-			quitButton = new Button(ImageIO.read(getClass().getResource("images/quitButton.png")), 290, 5);
-			saveButton = new Button(ImageIO.read(getClass().getResource("images/saveButton.png")), 385, 5);
+			restartButton = new Button(ImageIO.read(getClass().getResource("images/restartButton.png")), 100, 5);
+			quitButton = new Button(ImageIO.read(getClass().getResource("images/quitButton.png")), 195, 5);
+			saveButton = new Button(ImageIO.read(getClass().getResource("images/saveButton.png")), 290, 5);
 		} catch (IOException e) {e.printStackTrace();}
 
 		Reset();
@@ -86,9 +86,6 @@ public class drawWindow extends JPanel implements MouseListener
         		g2d.drawImage(startButton.getImage(), startButton.getX(),  startButton.getY(),  null);
         		break;
 			case COMPLETED:
-				break;
-			case COUNTDOWN:
-				g2d.drawString("Countdown to begin in " + m_iGlobalTimer + " seconds", 5, STATE_POSITION);
 				break;
 			case IN_TRIAL:				
 				break;
