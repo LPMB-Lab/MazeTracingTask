@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 public class drawWindow extends JPanel implements MouseListener {
 	private static final long serialVersionUID = 1L;
 	private static final int DIFFICULTY = 5;
+	private static final int STROKE_WIDTH = 10;
 
 	Dimension screenSize;
 	RenderingHints rh;
@@ -67,6 +68,16 @@ public class drawWindow extends JPanel implements MouseListener {
 			Trial myTrial = new Trial(DIFFICULTY);
 			m_vTrials.add(myTrial);
 		}
+		
+		for (DirectionType direction : DirectionType.values()) {
+			for (HandType hand : HandType.values()) {
+				for (VisionType vision : VisionType.values()) {
+					System.out.println("Trial: " + direction.name() + ", "
+												+ hand.name() + ", " 
+												+ vision.name());
+				}
+			}
+		}
 	}
 
 	private void UpdateGraphics() {
@@ -107,7 +118,7 @@ public class drawWindow extends JPanel implements MouseListener {
 		int screenWidth = (int) screenSize.getWidth();
 		int screenHeight = (int) screenSize.getHeight();
 
-		g2d.setStroke(new BasicStroke(10));
+		g2d.setStroke(new BasicStroke(STROKE_WIDTH));
 
 		for (int i = 0; i < m_vTrials.size(); i++) {
 			Trial myTrial = m_vTrials.get(i);
