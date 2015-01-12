@@ -2,6 +2,7 @@ import java.util.Random;
 
 public class Trial {
 	private Point2D[] m_aPointsArray = new Point2D[10];
+	private long m_lTimer;
 	private int m_iStepX;
 	private int m_iDifficulty;
 
@@ -31,5 +32,13 @@ public class Trial {
 
 	public Point2D[] getPointsArray() {
 		return m_aPointsArray;
+	}
+	
+	public void setTimer(long timer) {
+		m_lTimer = timer;
+	}
+	
+	public long getTimer() { 
+		return m_lTimer;
 	}
 }
