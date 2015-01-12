@@ -10,4 +10,8 @@ enum VisionType {
 	public VisionType next() {
         return values()[ordinal() + 1];
     }
+	
+	public static VisionType first() {
+		return values()[0];
+	}
 }

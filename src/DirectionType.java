@@ -10,4 +10,8 @@ public enum DirectionType {
 	public DirectionType next() {
         return values()[ordinal() + 1];
     }
+
+	public static DirectionType first() {
+		return values()[0];
+	}
 }

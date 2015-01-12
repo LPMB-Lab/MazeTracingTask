@@ -10,4 +10,8 @@ enum HandType {
 	public HandType next() {
         return values()[ordinal() + 1];
     }
+	
+	public static HandType first() {
+		return values()[0];
+	}
 }
