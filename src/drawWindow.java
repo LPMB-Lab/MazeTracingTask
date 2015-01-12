@@ -21,7 +21,15 @@ public class drawWindow extends JPanel implements MouseListener {
 	RenderingHints rh;
 
 	State m_State;
+	DirectionType m_DirectionType;
+	HandType m_HandType;
+	VisionType m_VisionType;
+	
 	boolean m_bIsPressed;
+	
+	long m_lStartTime;
+	int m_iCurrentTrial;
+	int m_iGlobalTimer;
 
 	Vector<Trial> m_vTrials = new Vector<Trial>();
 
@@ -29,11 +37,6 @@ public class drawWindow extends JPanel implements MouseListener {
 	Button restartButton;
 	Button quitButton;
 	Button saveButton;
-
-	int m_iCurrentTrial;
-
-	long m_lStartTime;
-	int m_iGlobalTimer;
 
 	drawWindow() {
 		screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -58,6 +61,10 @@ public class drawWindow extends JPanel implements MouseListener {
 
 	void Reset() {
 		m_State = State.IDLE;
+		m_DirectionType = DirectionType.first();
+		m_HandType = HandType.first();
+		m_VisionType = VisionType.first();
+		
 		m_bIsPressed = false;
 		m_iGlobalTimer = 0;
 		m_iCurrentTrial = 0;
@@ -67,7 +74,7 @@ public class drawWindow extends JPanel implements MouseListener {
 		for (int i = 0; i < 35; i++) {
 			Trial myTrial = new Trial(DIFFICULTY);
 			m_vTrials.add(myTrial);
-		}
+		}	
 		
 		for (DirectionType direction : DirectionType.values()) {
 			for (HandType hand : HandType.values()) {
@@ -114,6 +121,7 @@ public class drawWindow extends JPanel implements MouseListener {
 				quitButton.getY(), null);
 		g2d.drawImage(saveButton.getImage(), saveButton.getX(),
 				saveButton.getY(), null);
+		//g2d.drawString(currentTrialType, 300, 300);
 
 		int screenWidth = (int) screenSize.getWidth();
 		int screenHeight = (int) screenSize.getHeight();
