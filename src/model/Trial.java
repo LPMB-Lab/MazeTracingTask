@@ -1,11 +1,19 @@
 package model;
 import java.util.Random;
 
+import enums.DirectionType;
+import enums.HandType;
+import enums.VisionType;
+
 public class Trial {
 	private Point2D[] m_aPointsArray = new Point2D[10];
 	private long m_lTimer;
 	private int m_iStepX;
 	private int m_iDifficulty;
+	private HandType m_HandType;
+	private DirectionType m_DirectionType;
+	private VisionType m_VisionType;
+	
 
 	public Trial(int difficulty) {
 		m_iDifficulty = difficulty;
@@ -41,5 +49,29 @@ public class Trial {
 	
 	public long getTimer() { 
 		return m_lTimer;
+	}
+
+	public HandType getM_HandType() {
+		return m_HandType;
+	}
+
+	public void setM_HandType(HandType m_HandType) {
+		this.m_HandType = m_HandType;
+	}
+
+	public DirectionType getM_DirectionType() {
+		return m_DirectionType;
+	}
+
+	public void setM_DirectionType(DirectionType m_DirectionType) {
+		this.m_DirectionType = m_DirectionType;
+	}
+
+	public VisionType getM_VisionType() {
+		return m_VisionType;
+	}
+
+	public void setM_VisionType(VisionType m_VisionType) {
+		this.m_VisionType = m_VisionType;
 	}
 }
