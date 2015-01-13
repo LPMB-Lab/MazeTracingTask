@@ -12,6 +12,14 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+import model.Button;
+import model.Point2D;
+import model.Trial;
+import enums.DirectionType;
+import enums.HandType;
+import enums.State;
+import enums.VisionType;
+
 public class drawWindow extends JPanel implements MouseListener {
 	private static final long serialVersionUID = 1L;
 	private static final int DIFFICULTY = 5;
@@ -24,6 +32,7 @@ public class drawWindow extends JPanel implements MouseListener {
 	DirectionType m_DirectionType;
 	HandType m_HandType;
 	VisionType m_VisionType;
+	int m_TypeCount;
 	
 	boolean m_bIsPressed;
 	
@@ -64,6 +73,7 @@ public class drawWindow extends JPanel implements MouseListener {
 		m_DirectionType = DirectionType.first();
 		m_HandType = HandType.first();
 		m_VisionType = VisionType.first();
+		m_TypeCount = 0;
 		
 		m_bIsPressed = false;
 		m_iGlobalTimer = 0;
