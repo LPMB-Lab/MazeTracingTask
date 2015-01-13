@@ -1,5 +1,6 @@
 import java.awt.BasicStroke;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -23,7 +24,7 @@ import enums.VisionType;
 public class drawWindow extends JPanel implements MouseListener {
 	private static final long serialVersionUID = 1L;
 	private static final int DIFFICULTY = 5;
-	private static final int STROKE_WIDTH = 10;
+	private static final int STROKE_WIDTH = 20;
 
 	Dimension screenSize;
 	RenderingHints rh;
@@ -81,7 +82,7 @@ public class drawWindow extends JPanel implements MouseListener {
 
 		m_vTrials.clear();
 
-		for (int i = 0; i < 35; i++) {
+		for (int i = 0; i < 1; i++) {
 			Trial myTrial = new Trial(DIFFICULTY);
 			m_vTrials.add(myTrial);
 		}	
@@ -131,7 +132,12 @@ public class drawWindow extends JPanel implements MouseListener {
 				quitButton.getY(), null);
 		g2d.drawImage(saveButton.getImage(), saveButton.getX(),
 				saveButton.getY(), null);
-		//g2d.drawString(currentTrialType, 300, 300);
+		
+		Font helvetica = new Font ("Helvetica", Font.BOLD, 18);
+		g2d.setFont(helvetica);
+		g2d.drawString(m_DirectionType.name(), 5, 75);
+		g2d.drawString(m_VisionType.name(), 5, 95);
+		g2d.drawString(m_HandType.name(), 5, 115);
 
 		int screenWidth = (int) screenSize.getWidth();
 		int screenHeight = (int) screenSize.getHeight();
