@@ -152,6 +152,8 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		g2d.drawString(m_DirectionType.name(), 5, 75);
 		g2d.drawString(m_VisionType.name(), 5, 95);
 		g2d.drawString(m_HandType.name(), 5, 115);
+		g2d.drawString(m_State == State.FAIL ? "TRIAL FAILED" : "", 5, 135);
+		g2d.drawString(m_State == State.IN_TRIAL ? "TRIAL PROGRESS" : "", 5, 155);
 
 		g2d.setStroke(new BasicStroke(STROKE_WIDTH));
 
@@ -184,15 +186,6 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 			UpdateGraphics();
 		} else if (saveButton.isPressed(x, y)) {
 			ExportFile();
-		}
-		
-		int xStart = m_vTrials.get(m_iCurrentTrial).getStartX()*screenWidth / 100;
-		int yStart = m_vTrials.get(m_iCurrentTrial).getStartY()*screenHeight / 100;
-		
-		if (Math.sqrt(Math.pow((x-xStart), 2) + Math.pow((y-yStart), 2)) < STROKE_WIDTH) {
-			if (m_State == State.IDLE) {
-				m_State = State.IN_TRIAL;
-			}
 		}
 	}
 
@@ -257,6 +250,20 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 	@Override
 	public void mousePressed(MouseEvent e) {
 		m_bIsPressed = true;
+		
+		int x = e.getX();
+		int y = e.getY();
+		
+		int xStart = m_vTrials.get(m_iCurrentTrial).getStartX()*screenWidth / 100;
+		int yStart = m_vTrials.get(m_iCurrentTrial).getStartY()*screenHeight / 100;
+		
+		if (Math.sqrt(Math.pow((x-xStart), 2) + Math.pow((y-yStart), 2)) < STROKE_WIDTH) {
+			if (m_State == State.IDLE) {
+				m_State = State.IN_TRIAL;
+			}
+		}
+		
+		UpdateGraphics();
 	}
 
 	@Override
@@ -265,6 +272,8 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		
 		if (m_State == State.IN_TRIAL) {
 			m_State = State.FAIL;
+			System.out.println("FAIL");
+			UpdateGraphics();
 		}
 	}
 
