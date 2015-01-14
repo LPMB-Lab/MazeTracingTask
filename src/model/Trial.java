@@ -25,11 +25,7 @@ public class Trial {
 			Point2D myPoint = new Point2D();
 			m_aPointsArray[i] = myPoint;
 		}
-
-		GenerateTrial();
-	}
-
-	private void GenerateTrial() {
+		
 		for (int i = 0; i < ARRAY_SIZE; i++) {
 			int yLowerRange = 50 - 5 * m_iDifficulty;
 
