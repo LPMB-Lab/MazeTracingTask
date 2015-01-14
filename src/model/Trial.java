@@ -43,6 +43,14 @@ public class Trial {
 		return m_aPointsArray;
 	}
 	
+	public int getStartX() {
+		return m_aPointsArray[0].getX();
+	}
+	
+	public int getStartY() {
+		return m_aPointsArray[0].getY();
+	}
+	
 	public void setTimer(long timer) {
 		m_lTimer = timer;
 	}

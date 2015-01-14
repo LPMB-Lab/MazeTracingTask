@@ -25,9 +25,10 @@ import enums.VisionType;
 public class drawWindow extends JPanel implements MouseListener, MouseMotionListener {
 	private static final long serialVersionUID = 1L;
 	private static final int DIFFICULTY = 5;
-	private static final int STROKE_WIDTH = 20;
+	private static final int STROKE_WIDTH = 40;
 
-	Dimension screenSize;
+	int screenWidth;
+	int screenHeight;
 	RenderingHints rh;
 
 	State m_State;
@@ -50,7 +51,9 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 	Button saveButton;
 
 	drawWindow() {
-		screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		screenWidth = (int) screenSize.getWidth();
+		screenHeight = (int) screenSize.getHeight();
 		setSize((int) screenSize.getWidth(), (int) screenSize.getHeight());
 		addMouseListener(this);
 
@@ -140,9 +143,6 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		g2d.drawString(m_VisionType.name(), 5, 95);
 		g2d.drawString(m_HandType.name(), 5, 115);
 
-		int screenWidth = (int) screenSize.getWidth();
-		int screenHeight = (int) screenSize.getHeight();
-
 		g2d.setStroke(new BasicStroke(STROKE_WIDTH));
 
 		for (int i = 0; i < m_vTrials.size(); i++) {
@@ -178,6 +178,15 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		} else if (saveButton.isPressed(x, y)) {
 			ExportFile();
 		}
+		
+		int xStart = m_vTrials.get(m_iCurrentTrial).getStartX()*screenWidth / 100;
+		int yStart = m_vTrials.get(m_iCurrentTrial).getStartY()*screenHeight / 100;
+		
+		if (Math.sqrt(Math.pow((x-xStart), 2) + Math.pow((y-yStart), 2)) < STROKE_WIDTH) {
+			if (m_State == State.IDLE) {
+				m_State = State.IN_TRIAL;
+			}
+		}
 	}
 
 	private void StartSimulation() {
@@ -201,7 +210,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		m_bIsPressed = false;
+		m_bIsPressed = false; 
 	}
 
 	@Override
@@ -209,6 +218,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		if (m_bIsPressed) {
 			int x = e.getX();
 			int y = e.getY();
+			
 			// Do Math check
 		}
 	}
