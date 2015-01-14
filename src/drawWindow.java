@@ -47,11 +47,12 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 	VisionType m_VisionType;
 	int m_TypeCount;
 	
-	boolean m_bIsPressed;
-	
-	long m_lStartTime;
 	int m_iCurrentTrial;
-	int m_iGlobalTimer;
+	
+	int m_iStartErrorTime;
+	int m_iEndErrorTime;
+	int m_iErrorTimer;
+	int m_iTrialTimer;
 
 	Vector<Trial> m_vTrials = new Vector<Trial>();
 
@@ -90,9 +91,12 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		m_VisionType = VisionType.first();
 		m_TypeCount = 0;
 		
-		m_bIsPressed = false;
-		m_iGlobalTimer = 0;
 		m_iCurrentTrial = 0;
+		
+		m_iStartErrorTime = 0;
+		m_iEndErrorTime = 0;
+		m_iErrorTimer = 0;
+		m_iTrialTimer = 0;
 
 		m_vTrials.clear();
 
@@ -254,8 +258,6 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		m_bIsPressed = true;
-		
 		int x = e.getX();
 		int y = e.getY();
 		
@@ -273,8 +275,6 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		m_bIsPressed = false;
-		
 		if (m_State == State.IN_TRIAL) {
 			m_State = State.FAIL;
 			System.out.println("FAIL");
