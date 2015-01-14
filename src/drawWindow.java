@@ -228,12 +228,10 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 				PrintWriter writer = new PrintWriter(fileName, "US-ASCII");
 				String exportString = "";
 				
-				/*
-				for (int i = 0; i < m_vGeneratedTrials.size(); i++) {
+				for (int i = 0; i < m_vTrials.size(); i++) {
 					exportString += "TRIAL #" + (i + 1) + "\r\n";
-					exportString += m_vGeneratedTrials.get(i).ExportTrial();
+					exportString += m_vTrials.get(i).ExportTrial();
 				}
-				*/
 
 				writer.println(exportString);
 				writer.close();
