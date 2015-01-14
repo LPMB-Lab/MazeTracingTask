@@ -8,11 +8,21 @@ import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import model.Button;
 import model.Point2D;
@@ -145,16 +155,13 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 		g2d.setStroke(new BasicStroke(STROKE_WIDTH));
 
-		for (int i = 0; i < m_vTrials.size(); i++) {
-			Trial myTrial = m_vTrials.get(i);
-			Point2D[] m_aPointsArray = myTrial.getPointsArray();
+		Point2D[] m_aPointsArray = m_vTrials.get(m_iCurrentTrial).getPointsArray();
 
-			for (int j = 0; j < m_aPointsArray.length - 1; j++)
-				g2d.drawLine(m_aPointsArray[j].getX() * screenWidth / 100,
-						m_aPointsArray[j].getY() * screenHeight / 100,
-						m_aPointsArray[j + 1].getX() * screenWidth / 100,
-						m_aPointsArray[j + 1].getY() * screenHeight / 100);
-		}
+		for (int j = 0; j < m_aPointsArray.length - 1; j++)
+			g2d.drawLine(m_aPointsArray[j].getX() * screenWidth / 100,
+					m_aPointsArray[j].getY() * screenHeight / 100,
+					m_aPointsArray[j + 1].getX() * screenWidth / 100,
+					m_aPointsArray[j + 1].getY() * screenHeight / 100);
 	}
 
 	@Override
@@ -193,6 +200,52 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 	}
 
 	private void ExportFile() {
+		JTextField fileNameInput = new JTextField();
+		String CompletionString = "Please enter File Name";
+
+		if (m_State != State.COMPLETED)
+			CompletionString += " (Trial is Unfinished)";
+
+		final JComponent[] inputs = new JComponent[] {
+				new JLabel(CompletionString), fileNameInput };
+		int dialogResult = JOptionPane.showConfirmDialog(null, inputs,
+				"Save File", JOptionPane.OK_CANCEL_OPTION);
+
+		if (dialogResult == JOptionPane.YES_OPTION) {
+			try {
+				DateFormat dateFormat = new SimpleDateFormat(
+						"yyyy_MM_dd HH_mm_ss");
+				Date date = new Date();
+				String fileName = "";
+
+				if (fileNameInput.getText().equals(""))
+					fileName = dateFormat.format(date) + "_NON_NAMED_TRIAL"
+							+ ".xls";
+				else
+					fileName = dateFormat.format(date) + "_"
+							+ fileNameInput.getText() + ".xls";
+
+				PrintWriter writer = new PrintWriter(fileName, "US-ASCII");
+				String exportString = "";
+				
+				/*
+				for (int i = 0; i < m_vGeneratedTrials.size(); i++) {
+					exportString += "TRIAL #" + (i + 1) + "\r\n";
+					exportString += m_vGeneratedTrials.get(i).ExportTrial();
+				}
+				*/
+
+				writer.println(exportString);
+				writer.close();
+
+				JOptionPane.showMessageDialog(null, "Save Successful!",
+						"Save Success", JOptionPane.PLAIN_MESSAGE);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -210,7 +263,11 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		m_bIsPressed = false; 
+		m_bIsPressed = false;
+		
+		if (m_State == State.IN_TRIAL) {
+			
+		}
 	}
 
 	@Override
