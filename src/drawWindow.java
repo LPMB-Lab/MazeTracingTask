@@ -7,6 +7,7 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.util.Vector;
 
@@ -21,7 +22,7 @@ import enums.HandType;
 import enums.State;
 import enums.VisionType;
 
-public class drawWindow extends JPanel implements MouseListener {
+public class drawWindow extends JPanel implements MouseListener, MouseMotionListener {
 	private static final long serialVersionUID = 1L;
 	private static final int DIFFICULTY = 5;
 	private static final int STROKE_WIDTH = 20;
@@ -201,5 +202,19 @@ public class drawWindow extends JPanel implements MouseListener {
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		m_bIsPressed = false;
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if (m_bIsPressed) {
+			int x = e.getX();
+			int y = e.getY();
+			// Do Math check
+		}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		
 	}
 }

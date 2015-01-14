@@ -47,7 +47,7 @@ public class Trial {
 		m_lTimer = timer;
 	}
 	
-	public long getTimer() { 
+	public long getTimer() {
 		return m_lTimer;
 	}
 
