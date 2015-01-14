@@ -6,7 +6,8 @@ import enums.HandType;
 import enums.VisionType;
 
 public class Trial {
-	private Point2D[] m_aPointsArray = new Point2D[10];
+	private final int ARRAY_SIZE = 10;
+	private Point2D[] m_aPointsArray = new Point2D[ARRAY_SIZE];
 	private long m_lTimer;
 	private int m_iStepX;
 	private int m_iDifficulty;
@@ -28,7 +29,7 @@ public class Trial {
 	}
 
 	private void GenerateTrial() {
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < ARRAY_SIZE; i++) {
 			int yLowerRange = 50 - 5 * m_iDifficulty;
 
 			int yCoord = (new Random().nextInt(m_iDifficulty * 10))
@@ -37,6 +38,12 @@ public class Trial {
 			m_aPointsArray[i].setCoords(m_iStepX, yCoord);
 			m_iStepX += 10;
 		}
+	}
+	
+	public String ExportTrial() {
+		String result = "";
+		
+		return result;
 	}
 
 	public Point2D[] getPointsArray() {
@@ -49,6 +56,14 @@ public class Trial {
 	
 	public int getStartY() {
 		return m_aPointsArray[0].getY();
+	}
+	
+	public int getEndX() {
+		return m_aPointsArray[ARRAY_SIZE-1].getX();
+	}
+	
+	public int getEndY() {
+		return m_aPointsArray[ARRAY_SIZE-1].getY();
 	}
 	
 	public void setTimer(long timer) {
