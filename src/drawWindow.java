@@ -61,10 +61,6 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 	Button saveButton;
 
 	drawWindow() {
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		screenWidth = (int) screenSize.getWidth();
-		screenHeight = (int) screenSize.getHeight();
-		setSize((int) screenSize.getWidth(), (int) screenSize.getHeight());
 		addMouseListener(this);
 
 		try {
@@ -84,6 +80,9 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 	}
 
 	void Reset() {
+		screenWidth = (int) getWidth();
+		screenHeight = (int) getHeight();
+		
 		m_State = State.IDLE;
 		m_DirectionType = DirectionType.first();
 		m_HandType = HandType.first();
@@ -96,7 +95,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 		m_vTrials.clear();
 
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 35; i++) {
 			Trial myTrial = new Trial(DIFFICULTY);
 			m_vTrials.add(myTrial);
 		}	
@@ -110,6 +109,11 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 				}
 			}
 		}
+	}
+	
+	private void RestartTrial() {
+		m_vTrials.remove(m_iCurrentTrial);
+		m_vTrials.add(m_iCurrentTrial, new Trial(DIFFICULTY));
 	}
 
 	private void UpdateGraphics() {
@@ -178,18 +182,16 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		int y = e.getY();
 
 		if (startButton.isPressed(x, y)) {
-			StartSimulation();
+			Reset();
+			UpdateGraphics();
 		} else if (quitButton.isPressed(x, y)) {
 			System.exit(0);
 		} else if (restartButton.isPressed(x, y)) {
-			Reset();
+			RestartTrial();
 			UpdateGraphics();
 		} else if (saveButton.isPressed(x, y)) {
 			ExportFile();
 		}
-	}
-
-	private void StartSimulation() {
 	}
 
 	private void ExportFile() {
