@@ -81,28 +81,36 @@ public class Trial {
 	public long getTimer() {
 		return m_iTimer;
 	}
+	
+	public int getErrorTimer() {
+		return m_iErrorTimer;
+	}
 
-	public HandType getM_HandType() {
+	public void setErrorTimer(int timer) {
+		m_iErrorTimer = timer;
+	}
+
+	public HandType getHandType() {
 		return m_HandType;
 	}
 
-	public void setM_HandType(HandType m_HandType) {
-		this.m_HandType = m_HandType;
+	public void setHandType(HandType type) {
+		m_HandType = type;
 	}
 
-	public DirectionType getM_DirectionType() {
+	public DirectionType getDirectionType() {
 		return m_DirectionType;
 	}
 
-	public void setM_DirectionType(DirectionType m_DirectionType) {
-		this.m_DirectionType = m_DirectionType;
+	public void setDirectionType(DirectionType type) {
+		m_DirectionType = type;
 	}
 
-	public VisionType getM_VisionType() {
+	public VisionType getVisionType() {
 		return m_VisionType;
 	}
 
-	public void setM_VisionType(VisionType m_VisionType) {
-		this.m_VisionType = m_VisionType;
+	public void setM_VisionType(VisionType type) {
+		m_VisionType = type;
 	}
 }
