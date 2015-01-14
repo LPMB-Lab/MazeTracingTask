@@ -264,7 +264,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		m_bIsPressed = false;
 		
 		if (m_State == State.IN_TRIAL) {
-			
+			m_State = State.FAIL;
 		}
 	}
 
