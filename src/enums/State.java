@@ -1,4 +1,4 @@
 package enums;
 public enum State {
-	IDLE, IN_TRIAL, FAIL, COMPLETED,
+	IDLE, IN_TRIAL, FAIL, COMPLETE,
 };

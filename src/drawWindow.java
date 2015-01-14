@@ -62,6 +62,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 	drawWindow() {
 		addMouseListener(this);
+		addMouseMotionListener(this);
 
 		try {
 			startButton = new Button(ImageIO.read(getClass().getResource(
@@ -133,10 +134,8 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 		switch (m_State) {
 		case IDLE:
-			g2d.drawImage(startButton.getImage(), startButton.getX(),
-					startButton.getY(), null);
 			break;
-		case COMPLETED:
+		case COMPLETE:
 			break;
 		case IN_TRIAL:
 			break;
@@ -144,6 +143,8 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 			break;
 		}
 
+		g2d.drawImage(startButton.getImage(), startButton.getX(),
+				startButton.getY(), null);
 		g2d.drawImage(restartButton.getImage(), restartButton.getX(),
 				restartButton.getY(), null);
 		g2d.drawImage(quitButton.getImage(), quitButton.getX(),
@@ -158,6 +159,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		g2d.drawString(m_HandType.name(), 5, 115);
 		g2d.drawString(m_State == State.FAIL ? "TRIAL FAILED" : "", 5, 135);
 		g2d.drawString(m_State == State.IN_TRIAL ? "TRIAL PROGRESS" : "", 5, 155);
+		g2d.drawString(m_State == State.IDLE ? "TRIAL IDLE" : "", 5, 175);
 
 		g2d.setStroke(new BasicStroke(STROKE_WIDTH));
 
@@ -187,6 +189,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		} else if (quitButton.isPressed(x, y)) {
 			System.exit(0);
 		} else if (restartButton.isPressed(x, y)) {
+			m_State = State.IDLE;
 			RestartTrial();
 			UpdateGraphics();
 		} else if (saveButton.isPressed(x, y)) {
@@ -198,7 +201,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		JTextField fileNameInput = new JTextField();
 		String CompletionString = "Please enter File Name";
 
-		if (m_State != State.COMPLETED)
+		if (m_State != State.COMPLETE)
 			CompletionString += " (Trial is Unfinished)";
 
 		final JComponent[] inputs = new JComponent[] {
@@ -281,12 +284,24 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (m_bIsPressed) {
-			int x = e.getX();
-			int y = e.getY();
-			
-			// Do Math check
+		int x = e.getX();
+		int y = e.getY();
+		
+		int xEnd = m_vTrials.get(m_iCurrentTrial).getEndX()*screenWidth / 100;
+		int yEnd = m_vTrials.get(m_iCurrentTrial).getEndY()*screenHeight / 100;
+		
+		if (Math.sqrt(Math.pow((x-xEnd), 2) + Math.pow((y-yEnd), 2)) < STROKE_WIDTH) {
+			if (m_State == State.IN_TRIAL) {
+				if (m_iCurrentTrial == 35) {
+					m_State = State.COMPLETE;
+				} else {
+					m_State = State.IDLE;
+					m_iCurrentTrial++;
+				}
+			}
 		}
+		
+		UpdateGraphics();
 	}
 
 	@Override
