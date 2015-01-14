@@ -8,7 +8,8 @@ import enums.VisionType;
 public class Trial {
 	private final int ARRAY_SIZE = 10;
 	private Point2D[] m_aPointsArray = new Point2D[ARRAY_SIZE];
-	private long m_lTimer;
+	private int m_iTimer;
+	private int m_iErrorTimer;
 	private int m_iStepX;
 	private int m_iDifficulty;
 	private HandType m_HandType;
@@ -41,9 +42,16 @@ public class Trial {
 	}
 	
 	public String ExportTrial() {
-		String result = "";
 		
-		return result;
+		String exportString = "";
+		String endl = "\r\n";
+		exportString += "VisionType:\t" + m_VisionType.name() + endl;
+		exportString += "DirectionType:\t" + m_DirectionType.name() + endl;
+		exportString += "HandType:\t" + m_VisionType.name() + endl;
+		exportString += "Timing:\t" + m_iTimer + endl;
+		exportString += "Error:\t" + m_iErrorTimer + endl;
+		
+		return exportString;
 	}
 
 	public Point2D[] getPointsArray() {
@@ -66,12 +74,12 @@ public class Trial {
 		return m_aPointsArray[ARRAY_SIZE-1].getY();
 	}
 	
-	public void setTimer(long timer) {
-		m_lTimer = timer;
+	public void setTimer(int timer) {
+		m_iTimer = timer;
 	}
 	
 	public long getTimer() {
-		return m_lTimer;
+		return m_iTimer;
 	}
 
 	public HandType getM_HandType() {
