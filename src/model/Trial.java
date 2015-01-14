@@ -48,8 +48,8 @@ public class Trial {
 		exportString += "VisionType:\t" + m_VisionType.name() + endl;
 		exportString += "DirectionType:\t" + m_DirectionType.name() + endl;
 		exportString += "HandType:\t" + m_VisionType.name() + endl;
-		exportString += "Timing:\t" + m_iTimer + endl;
-		exportString += "Error:\t" + m_iErrorTimer + endl;
+		exportString += "Timing (ms):\t" + m_iTimer + endl;
+		exportString += "Error (ms):\t" + m_iErrorTimer + endl;
 		
 		return exportString;
 	}
