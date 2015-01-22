@@ -8,8 +8,8 @@ import enums.VisionType;
 public class Trial {
 	private final int ARRAY_SIZE = 10;
 	private Point2D[] m_aPointsArray = new Point2D[ARRAY_SIZE];
-	private int m_iTimer;
-	private int m_iErrorTimer;
+	private long m_lTimer = 0;
+	private long m_lErrorTimer = 0;
 	private int m_iStepX;
 	private int m_iDifficulty;
 	private HandType m_HandType;
@@ -41,17 +41,25 @@ public class Trial {
 		
 		String exportString = "";
 		String endl = "\r\n";
-		exportString += "VisionType:\t" + m_VisionType.name() + endl;
-		exportString += "DirectionType:\t" + m_DirectionType.name() + endl;
-		exportString += "HandType:\t" + m_VisionType.name() + endl;
-		exportString += "Timing (ms):\t" + m_iTimer + endl;
-		exportString += "Error (ms):\t" + m_iErrorTimer + endl;
+		//exportString += "VisionType:\t" + m_VisionType.name() + endl;
+		//exportString += "DirectionType:\t" + m_DirectionType.name() + endl;
+		//exportString += "HandType:\t" + m_VisionType.name() + endl;
+		exportString += "Timing (ns):\t" + m_lTimer + endl;
+		exportString += "Error (ns):\t" + m_lErrorTimer + endl;
 		
 		return exportString;
+	}
+	
+	public int getSize() {
+		return ARRAY_SIZE;
 	}
 
 	public Point2D[] getPointsArray() {
 		return m_aPointsArray;
+	}
+	
+	public Point2D getPoint(int index) {
+		return m_aPointsArray[index];
 	}
 	
 	public int getStartX() {
@@ -70,20 +78,20 @@ public class Trial {
 		return m_aPointsArray[ARRAY_SIZE-1].getY();
 	}
 	
-	public void setTimer(int timer) {
-		m_iTimer = timer;
+	public void setTimer(long timer) {
+		m_lTimer = timer;
 	}
 	
 	public long getTimer() {
-		return m_iTimer;
+		return m_lTimer;
 	}
 	
-	public int getErrorTimer() {
-		return m_iErrorTimer;
+	public long getErrorTimer() {
+		return m_lErrorTimer;
 	}
 
-	public void setErrorTimer(int timer) {
-		m_iErrorTimer = timer;
+	public void addErrorTimer(long timer) {
+		m_lErrorTimer = timer;
 	}
 
 	public HandType getHandType() {

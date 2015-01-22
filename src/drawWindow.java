@@ -1,10 +1,9 @@
 import java.awt.BasicStroke;
-import java.awt.Dimension;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -36,6 +35,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 	private static final long serialVersionUID = 1L;
 	private static final int DIFFICULTY = 5;
 	private static final int STROKE_WIDTH = 40;
+	private static final int ERROR_CIRCLE_SIZE = 40;
 
 	int screenWidth;
 	int screenHeight;
@@ -49,10 +49,10 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 	
 	int m_iCurrentTrial;
 	
-	int m_iStartErrorTime;
-	int m_iEndErrorTime;
-	int m_iErrorTimer;
-	int m_iTrialTimer;
+	long m_lStartErrorTime;
+	long m_lTrialStartTimer;
+	
+	Point2D m_ErrorPoint;
 
 	Vector<Trial> m_vTrials = new Vector<Trial>();
 
@@ -93,10 +93,10 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		
 		m_iCurrentTrial = 0;
 		
-		m_iStartErrorTime = 0;
-		m_iEndErrorTime = 0;
-		m_iErrorTimer = 0;
-		m_iTrialTimer = 0;
+		m_lStartErrorTime = 0;
+		m_lTrialStartTimer = 0;
+		
+		m_ErrorPoint = new Point2D();
 
 		m_vTrials.clear();
 
@@ -129,6 +129,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 	void doDrawing(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
+		g2d.setColor(Color.BLACK);
 
 		rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
 				RenderingHints.VALUE_ANTIALIAS_ON);
@@ -167,6 +168,10 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 		g2d.setStroke(new BasicStroke(STROKE_WIDTH));
 
+		if (m_State == State.COMPLETE) {
+			return;
+		}
+		
 		Point2D[] m_aPointsArray = m_vTrials.get(m_iCurrentTrial).getPointsArray();
 
 		for (int j = 0; j < m_aPointsArray.length - 1; j++)
@@ -174,6 +179,12 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 					m_aPointsArray[j].getY() * screenHeight / 100,
 					m_aPointsArray[j + 1].getX() * screenWidth / 100,
 					m_aPointsArray[j + 1].getY() * screenHeight / 100);
+		
+		if (m_ErrorPoint.isValid()) {
+			g2d.setColor(Color.red);
+			g2d.fillOval(m_ErrorPoint.getX(), m_ErrorPoint.getY(), ERROR_CIRCLE_SIZE, ERROR_CIRCLE_SIZE);
+			g2d.setColor(Color.BLACK);
+		}
 	}
 
 	@Override
@@ -261,12 +272,17 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		int x = e.getX();
 		int y = e.getY();
 		
+		if (m_ErrorPoint.isValid()) {
+			m_ErrorPoint.clearPoint();
+		}
+		
 		int xStart = m_vTrials.get(m_iCurrentTrial).getStartX()*screenWidth / 100;
 		int yStart = m_vTrials.get(m_iCurrentTrial).getStartY()*screenHeight / 100;
 		
 		if (Math.sqrt(Math.pow((x-xStart), 2) + Math.pow((y-yStart), 2)) < STROKE_WIDTH) {
 			if (m_State == State.IDLE) {
 				m_State = State.IN_TRIAL;
+				m_lTrialStartTimer = System.nanoTime();
 			}
 		}
 		
@@ -280,28 +296,91 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 			System.out.println("FAIL");
 			UpdateGraphics();
 		}
+		
+		if (m_ErrorPoint.isValid()) {
+			m_ErrorPoint.clearPoint();
+		}
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		
+		if (m_State != State.IN_TRIAL) {
+			return;
+		}
+		
 		int x = e.getX();
 		int y = e.getY();
 		
-		int xEnd = m_vTrials.get(m_iCurrentTrial).getEndX()*screenWidth / 100;
-		int yEnd = m_vTrials.get(m_iCurrentTrial).getEndY()*screenHeight / 100;
-		
-		if (Math.sqrt(Math.pow((x-xEnd), 2) + Math.pow((y-yEnd), 2)) < STROKE_WIDTH) {
-			if (m_State == State.IN_TRIAL) {
-				if (m_iCurrentTrial == 35) {
-					m_State = State.COMPLETE;
-				} else {
-					m_State = State.IDLE;
-					m_iCurrentTrial++;
-				}
+		if (m_ErrorPoint.isValid()) {
+			if (Math.sqrt(Math.pow((x - m_ErrorPoint.getX() - ERROR_CIRCLE_SIZE), 2) + Math.pow((y - m_ErrorPoint.getY() - ERROR_CIRCLE_SIZE), 2)) > ERROR_CIRCLE_SIZE) {
+				return;
 			}
 		}
 		
-		UpdateGraphics();
+		// Finish Check
+		int xEnd = m_vTrials.get(m_iCurrentTrial).getEndX()*screenWidth / 100;
+		int yEnd = m_vTrials.get(m_iCurrentTrial).getEndY()*screenHeight / 100;
+
+		if (Math.sqrt(Math.pow((x-xEnd), 2) + Math.pow((y-yEnd), 2)) < STROKE_WIDTH) {
+			if (m_iCurrentTrial == 35) {
+				m_State = State.COMPLETE;
+			} else {
+				if (m_ErrorPoint.isValid()) {
+					m_ErrorPoint.clearPoint();
+				}
+				long m_lEndTime = System.nanoTime();
+				long diffTime = m_lEndTime - m_lTrialStartTimer;
+				m_vTrials.get(m_iCurrentTrial).setTimer(diffTime);
+				m_State = State.IDLE;
+				m_iCurrentTrial++;
+			}
+			UpdateGraphics();
+		}
+		
+		double x1 = 0,
+			y1 = 0,
+			x2 = 0,
+			y2 = 0,
+			xPrime = x,
+			yPrime = y;
+		
+		// Boundaries Check
+		for (int i = 1; i < m_vTrials.get(m_iCurrentTrial).getSize(); i++) {
+			if (x >= m_vTrials.get(m_iCurrentTrial).getPoint(i-1).getX()*screenWidth / 100 &&
+					x < m_vTrials.get(m_iCurrentTrial).getPoint(i).getX()*screenWidth / 100) {
+				x1 = m_vTrials.get(m_iCurrentTrial).getPoint(i-1).getX()*screenWidth / 100;
+				y1 = m_vTrials.get(m_iCurrentTrial).getPoint(i-1).getY()*screenHeight / 100;
+				x2 = m_vTrials.get(m_iCurrentTrial).getPoint(i).getX()*screenWidth / 100;
+				y2 = m_vTrials.get(m_iCurrentTrial).getPoint(i).getY()*screenHeight / 100;
+				break;
+			}
+		}
+		
+		double m1 = (y1-y2) / (x1-x2);
+		double mPrime = -1/m1;
+		double bPrime = yPrime - xPrime*mPrime;
+		double b1 = y1 -m1*x1;
+		double xNewPrime = (b1-bPrime)/(mPrime-m1);
+		double yNewPrime = (m1*xNewPrime) + b1;
+		double distance = Math.sqrt(Math.pow((xPrime-xNewPrime), 2) + Math.pow((yPrime -yNewPrime), 2));
+		
+		if (distance < STROKE_WIDTH/2) {
+			if (m_ErrorPoint.isValid()) {
+				m_ErrorPoint.clearPoint();
+				long m_lEndTime = System.nanoTime();
+				long diffTime = m_lEndTime - m_lStartErrorTime;
+				m_vTrials.get(m_iCurrentTrial).addErrorTimer(diffTime);
+				UpdateGraphics();
+			}
+		} else {
+			if (!m_ErrorPoint.isValid()) {
+				m_ErrorPoint.setCoords(x - ERROR_CIRCLE_SIZE/2, y - ERROR_CIRCLE_SIZE/2);
+				m_ErrorPoint.setValid(true);
+				m_lStartErrorTime = System.nanoTime();
+				UpdateGraphics();
+			}
+		}
 	}
 
 	@Override
