@@ -41,11 +41,21 @@ public class Trial {
 		
 		String exportString = "";
 		String endl = "\r\n";
-		//exportString += "VisionType:\t" + m_VisionType.name() + endl;
-		//exportString += "DirectionType:\t" + m_DirectionType.name() + endl;
-		//exportString += "HandType:\t" + m_VisionType.name() + endl;
-		exportString += "Timing (ns):\t" + m_lTimer + endl;
-		exportString += "Error (ns):\t" + m_lErrorTimer + endl;
+		if (m_VisionType != null &&
+				m_DirectionType != null &&
+				m_HandType != null) {
+			exportString += "VisionType:\t" + m_VisionType.name() + endl;
+			exportString += "DirectionType:\t" + m_DirectionType.name() + endl;
+			exportString += "HandType:\t" + m_HandType.name() + endl;
+			exportString += "Timing (ns):\t" + m_lTimer + endl;
+			exportString += "Error (ns):\t" + m_lErrorTimer + endl;
+		} else {
+			exportString += "INCOMPLETE TRIAL";
+			
+			for (int i = 0; i < 4; i++) {
+				exportString += endl;
+			}
+		}
 		
 		return exportString;
 	}
@@ -114,7 +124,7 @@ public class Trial {
 		return m_VisionType;
 	}
 
-	public void setM_VisionType(VisionType type) {
+	public void setVisionType(VisionType type) {
 		m_VisionType = type;
 	}
 }

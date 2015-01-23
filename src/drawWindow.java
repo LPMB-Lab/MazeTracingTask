@@ -103,17 +103,33 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		for (int i = 0; i < 35; i++) {
 			Trial myTrial = new Trial(DIFFICULTY);
 			m_vTrials.add(myTrial);
-		}	
-		
-		for (DirectionType direction : DirectionType.values()) {
-			for (HandType hand : HandType.values()) {
-				for (VisionType vision : VisionType.values()) {
-					System.out.println("Trial: " + direction.name() + ", "
-												+ hand.name() + ", " 
-												+ vision.name());
-				}
-			}
 		}
+	}
+	
+	private void nextTrial() {
+		m_vTrials.get(m_iCurrentTrial).setDirectionType(m_DirectionType);
+		m_vTrials.get(m_iCurrentTrial).setHandType(m_HandType);
+		m_vTrials.get(m_iCurrentTrial).setVisionType(m_VisionType);
+		
+		if (m_HandType.next() == null) {
+			m_HandType = HandType.first();
+			
+			if (m_DirectionType.next() == null) {
+				m_DirectionType = DirectionType.first();
+				
+				if (m_VisionType.next() == null) {
+					m_VisionType = VisionType.first();
+				} else {
+					m_VisionType = m_VisionType.next();
+				}
+			} else {
+				m_DirectionType = m_DirectionType.next();
+			}
+		} else {
+			m_HandType = m_HandType.next();
+		}
+		
+		m_iCurrentTrial++;
 	}
 	
 	private void RestartTrial() {
@@ -333,7 +349,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 				long diffTime = m_lEndTime - m_lTrialStartTimer;
 				m_vTrials.get(m_iCurrentTrial).setTimer(diffTime);
 				m_State = State.IDLE;
-				m_iCurrentTrial++;
+				nextTrial();
 			}
 			UpdateGraphics();
 		}
