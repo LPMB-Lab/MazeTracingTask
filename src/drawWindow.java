@@ -255,10 +255,18 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 							+ fileNameInput.getText() + ".xls";
 
 				PrintWriter writer = new PrintWriter(fileName, "US-ASCII");
-				String exportString = "";
+				String endl = "\r\n";
+				String tabl = "\t";
+				String exportString = tabl;
+				
+				exportString += "VisionType" + tabl;
+				exportString += "DirectionType" + tabl;
+				exportString += "HandType" + tabl;
+				exportString += "Timing (nanoseconds)" + tabl;
+				exportString += "Error (nanoseconds)" + endl;
 				
 				for (int i = 0; i < m_vTrials.size(); i++) {
-					exportString += "TRIAL #" + (i + 1) + "\r\n";
+					exportString += "TRIAL #" + (i + 1) + tabl;
 					exportString += m_vTrials.get(i).ExportTrial();
 				}
 

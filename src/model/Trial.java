@@ -12,9 +12,9 @@ public class Trial {
 	private long m_lErrorTimer = 0;
 	private int m_iStepX;
 	private int m_iDifficulty;
-	private HandType m_HandType;
-	private DirectionType m_DirectionType;
-	private VisionType m_VisionType;
+	private HandType m_HandType = null;
+	private DirectionType m_DirectionType = null;
+	private VisionType m_VisionType = null;
 	
 
 	public Trial(int difficulty) {
@@ -40,21 +40,23 @@ public class Trial {
 	public String ExportTrial() {
 		
 		String exportString = "";
+		String tabl = "\t";
 		String endl = "\r\n";
 		if (m_VisionType != null &&
 				m_DirectionType != null &&
 				m_HandType != null) {
-			exportString += "VisionType:\t" + m_VisionType.name() + endl;
-			exportString += "DirectionType:\t" + m_DirectionType.name() + endl;
-			exportString += "HandType:\t" + m_HandType.name() + endl;
-			exportString += "Timing (ns):\t" + m_lTimer + endl;
-			exportString += "Error (ns):\t" + m_lErrorTimer + endl;
+			exportString += m_VisionType.name() + tabl;
+			exportString += m_DirectionType.name() + tabl;
+			exportString += m_HandType.name() + tabl;
+			exportString += m_lTimer + tabl;
+			exportString += m_lErrorTimer + endl;
 		} else {
 			exportString += "INCOMPLETE TRIAL";
 			
 			for (int i = 0; i < 4; i++) {
-				exportString += endl;
+				exportString += tabl;
 			}
+			exportString += endl;
 		}
 		
 		return exportString;
