@@ -23,6 +23,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import cello.jtablet.TabletManager;
+import cello.jtablet.event.TabletEvent;
+import cello.jtablet.event.TabletListener;
 import model.Button;
 import model.Point2D;
 import model.Trial;
@@ -31,7 +34,7 @@ import enums.HandType;
 import enums.State;
 import enums.VisionType;
 
-public class drawWindow extends JPanel implements MouseListener, MouseMotionListener {
+public class drawWindow extends JPanel implements MouseListener, TabletListener {
 	private static final long serialVersionUID = 1L;
 	private static final int DIFFICULTY = 5;
 	private static final int STROKE_WIDTH = 40;
@@ -63,7 +66,7 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 	drawWindow() {
 		addMouseListener(this);
-		addMouseMotionListener(this);
+		TabletManager.getDefaultManager().addTabletListener(this, this);
 
 		try {
 			startButton = new Button(ImageIO.read(getClass().getResource(
@@ -209,25 +212,6 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 		doDrawing(g);
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-
-		if (startButton.isPressed(x, y)) {
-			Reset();
-			UpdateGraphics();
-		} else if (quitButton.isPressed(x, y)) {
-			System.exit(0);
-		} else if (restartButton.isPressed(x, y)) {
-			m_State = State.IDLE;
-			RestartTrial();
-			UpdateGraphics();
-		} else if (saveButton.isPressed(x, y)) {
-			ExportFile();
-		}
-	}
-
 	private void ExportFile() {
 		JTextField fileNameInput = new JTextField();
 		String CompletionString = "Please enter File Name";
@@ -282,6 +266,25 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 			}
 		}
 	}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		int x = e.getX();
+		int y = e.getY();
+
+		if (startButton.isPressed(x, y)) {
+			Reset();
+			UpdateGraphics();
+		} else if (quitButton.isPressed(x, y)) {
+			System.exit(0);
+		} else if (restartButton.isPressed(x, y)) {
+			m_State = State.IDLE;
+			RestartTrial();
+			UpdateGraphics();
+		} else if (saveButton.isPressed(x, y)) {
+			ExportFile();
+		}
+	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
@@ -293,42 +296,14 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-		
-		if (m_ErrorPoint.isValid()) {
-			m_ErrorPoint.clearPoint();
-		}
-		
-		int xStart = m_vTrials.get(m_iCurrentTrial).getStartX()*screenWidth / 100;
-		int yStart = m_vTrials.get(m_iCurrentTrial).getStartY()*screenHeight / 100;
-		
-		if (Math.sqrt(Math.pow((x-xStart), 2) + Math.pow((y-yStart), 2)) < STROKE_WIDTH) {
-			if (m_State == State.IDLE) {
-				m_State = State.IN_TRIAL;
-				m_lTrialStartTimer = System.nanoTime();
-			}
-		}
-		
-		UpdateGraphics();
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if (m_State == State.IN_TRIAL) {
-			m_State = State.FAIL;
-			System.out.println("FAIL");
-			UpdateGraphics();
-		}
-		
-		if (m_ErrorPoint.isValid()) {
-			m_ErrorPoint.clearPoint();
-		}
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e) {
-		
+	public void cursorDragged(TabletEvent e) {
 		if (m_State != State.IN_TRIAL) {
 			return;
 		}
@@ -405,10 +380,77 @@ public class drawWindow extends JPanel implements MouseListener, MouseMotionList
 				UpdateGraphics();
 			}
 		}
+		
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent e) {
+	public void cursorEntered(TabletEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cursorExited(TabletEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cursorGestured(TabletEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cursorMoved(TabletEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cursorPressed(TabletEvent e) {
+		int x = e.getX();
+		int y = e.getY();
+		
+		if (m_ErrorPoint.isValid()) {
+			m_ErrorPoint.clearPoint();
+		}
+		
+		int xStart = m_vTrials.get(m_iCurrentTrial).getStartX()*screenWidth / 100;
+		int yStart = m_vTrials.get(m_iCurrentTrial).getStartY()*screenHeight / 100;
+		
+		if (Math.sqrt(Math.pow((x-xStart), 2) + Math.pow((y-yStart), 2)) < STROKE_WIDTH) {
+			if (m_State == State.IDLE) {
+				m_State = State.IN_TRIAL;
+				m_lTrialStartTimer = System.nanoTime();
+			}
+		}
+		
+		UpdateGraphics();
+	}
+
+	@Override
+	public void cursorReleased(TabletEvent e) {
+		if (m_State == State.IN_TRIAL) {
+			m_State = State.FAIL;
+			System.out.println("FAIL");
+			UpdateGraphics();
+		}
+		
+		if (m_ErrorPoint.isValid()) {
+			m_ErrorPoint.clearPoint();
+		}
+	}
+
+	@Override
+	public void cursorScrolled(TabletEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void levelChanged(TabletEvent arg0) {
+		// TODO Auto-generated method stub
 		
 	}
 }
