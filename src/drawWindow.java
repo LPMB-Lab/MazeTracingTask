@@ -8,7 +8,10 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
@@ -20,7 +23,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import cello.jtablet.TabletManager;
@@ -246,6 +248,7 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 							+ fileNameInput.getText() + ".xls";
 
 				PrintWriter writer = new PrintWriter(fileName);
+				
 				String endl = "\r\n";
 				String tabl = "\t";
 				String exportString = tabl;
@@ -260,6 +263,17 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 					exportString += "TRIAL #" + (i + 1) + tabl;
 					exportString += m_vTrials.get(i).ExportTrial();
 				}
+				
+				File f = new File(fileName);
+				
+				if (f.createNewFile()) {
+					BufferedWriter out = new BufferedWriter(new FileWriter(f,true));
+					out.write(exportString);
+					out.close();
+					System.out.println("File created");
+				} else {
+					System.out.println("File already exists.");
+				}
 
 				writer.println(exportString);
 				writer.close();
@@ -267,6 +281,8 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 				JOptionPane.showMessageDialog(null, "Save Successful!",
 						"Save Success", JOptionPane.PLAIN_MESSAGE);
 			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
