@@ -433,7 +433,7 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 		int x = e.getX();
 		int y = e.getY();
 		
-		if (m_ErrorPoint.isValid()) {
+		if (m_ErrorPoint.isValid() && m_State == State.IDLE) {
 			m_ErrorPoint.clearPoint();
 		}
 		
@@ -452,6 +452,7 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 
 	@Override
 	public void cursorReleased(TabletEvent e) {
+		/*
 		if (m_State == State.IN_TRIAL) {
 			m_State = State.FAIL;
 			System.out.println("FAIL");
@@ -461,6 +462,7 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 		if (m_ErrorPoint.isValid()) {
 			m_ErrorPoint.clearPoint();
 		}
+		*/
 	}
 
 	@Override
