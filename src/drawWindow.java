@@ -1,13 +1,12 @@
-import java.applet.Applet;
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,7 +25,6 @@ import javax.swing.JTextField;
 import cello.jtablet.TabletManager;
 import cello.jtablet.event.TabletEvent;
 import cello.jtablet.event.TabletListener;
-import cello.jtablet.installer.JTabletExtension;
 import model.Button;
 import model.Point2D;
 import model.Trial;
@@ -35,7 +33,7 @@ import enums.HandType;
 import enums.State;
 import enums.VisionType;
 
-public class drawWindow extends Applet implements MouseListener, TabletListener {
+public class drawWindow extends JPanel implements MouseListener, TabletListener {
 	private static final long serialVersionUID = 1L;
 	private static final int DIFFICULTY = 5;
 	private static final int STROKE_WIDTH = 40;
@@ -65,11 +63,7 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 	Button quitButton;
 	Button saveButton;
 
-	public void init() {
-		if (!JTabletExtension.checkCompatibility(this, "1.2.0")) {
-            return;
-        }
-		
+	drawWindow() {
 		addMouseListener(this);
 		TabletManager.getDefaultManager().addTabletListener(this, this);
 
@@ -150,14 +144,6 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 		g = getGraphics();
 		paint(g);
 	}
-	
-	@Override
-	public void paint(Graphics g) {
-		Dimension d = getSize();
-		g.setColor(Color.WHITE);
-		g.fillRect(0, 0, d.width, d.height);
-		doDrawing(g);
-	}
 
 	void doDrawing(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
@@ -217,6 +203,12 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 			g2d.fillOval(m_ErrorPoint.getX(), m_ErrorPoint.getY(), ERROR_CIRCLE_SIZE, ERROR_CIRCLE_SIZE);
 			g2d.setColor(Color.BLACK);
 		}
+	}
+
+	@Override
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		doDrawing(g);
 	}
 
 	private void ExportFile() {
