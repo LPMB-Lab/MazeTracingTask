@@ -42,7 +42,7 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 	private static final int DIFFICULTY = 5;
 	private static final int STROKE_WIDTH = 40;
 	private static final int ERROR_CIRCLE_SIZE = 40;
-	private static final int TOTAL_TRIALS = 36;
+	private static final int TOTAL_TRIALS = 3;
 
 	int screenWidth;
 	int screenHeight;
@@ -140,8 +140,11 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 			m_HandType = m_HandType.next();
 		}
 		
-		if (m_State != State.COMPLETE) {
-			m_iCurrentTrial++;
+		m_iCurrentTrial++;
+		
+		if (m_iCurrentTrial == TOTAL_TRIALS) {
+			System.out.println("DONE");
+			m_State = State.COMPLETE;
 		}
 	}
 	
@@ -187,8 +190,7 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 		g2d.drawString(m_State == State.FAIL ? "TRIAL FAILED" : "", 5, 135);
 		g2d.drawString(m_State == State.IN_TRIAL ? "TRIAL PROGRESS" : "", 5, 155);
 		g2d.drawString(m_State == State.IDLE ? "TRIAL IDLE" : "", 5, 175);
-		g2d.drawString(m_State == State.COMPLETE ? "TRIAL COMPLETE" : "", 5, 195);
-		g2d.drawString("TRIAL #" + (m_iCurrentTrial + 1), 5, 215);
+		g2d.drawString(m_State == State.COMPLETE ? "TRIAL COMPLETE" : "TRIAL " + (m_iCurrentTrial + 1) + "/" + TOTAL_TRIALS, 5, 195);
 
 		g2d.setStroke(new BasicStroke(STROKE_WIDTH));
 
@@ -298,6 +300,10 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 			m_ErrorPoint.clearPoint();
 		}
 		
+		if (m_State == State.COMPLETE) {
+			return;
+		}
+		
 		int xStart = m_vTrials.get(m_iCurrentTrial).getStartX()*screenWidth / 100;
 		int yStart = m_vTrials.get(m_iCurrentTrial).getStartY()*screenHeight / 100;
 		
@@ -331,19 +337,20 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 		int yEnd = m_vTrials.get(m_iCurrentTrial).getEndY()*screenHeight / 100;
 
 		if (Math.sqrt(Math.pow((x-xEnd), 2) + Math.pow((y-yEnd), 2)) < STROKE_WIDTH) {
-			if (m_iCurrentTrial == TOTAL_TRIALS-1) {
-				m_State = State.COMPLETE;
-			} else {
-				if (m_ErrorPoint.isValid()) {
-					m_ErrorPoint.clearPoint();
-				}
-				long m_lEndTime = System.nanoTime();
-				long diffTime = m_lEndTime - m_lTrialStartTimer;
-				m_vTrials.get(m_iCurrentTrial).setTimer(diffTime);
-				m_State = State.IDLE;
-				nextTrial();
+			System.out.println((m_iCurrentTrial +1)+ "/" + TOTAL_TRIALS);
+			if (m_ErrorPoint.isValid()) {
+				m_ErrorPoint.clearPoint();
 			}
+			long m_lEndTime = System.nanoTime();
+			long diffTime = m_lEndTime - m_lTrialStartTimer;
+			m_vTrials.get(m_iCurrentTrial).setTimer(diffTime);
+			m_State = State.IDLE;
+			nextTrial();
 			UpdateGraphics();
+		}
+		
+		if (m_State == State.COMPLETE) {
+			return;
 		}
 		
 		double x1 = 0,
