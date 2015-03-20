@@ -42,6 +42,7 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 	private static final int DIFFICULTY = 5;
 	private static final int STROKE_WIDTH = 40;
 	private static final int ERROR_CIRCLE_SIZE = 40;
+	private static final int TOTAL_TRIALS = 36;
 
 	int screenWidth;
 	int screenHeight;
@@ -110,7 +111,7 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 
 		m_vTrials.clear();
 
-		for (int i = 0; i < 35; i++) {
+		for (int i = 0; i < TOTAL_TRIALS; i++) {
 			Trial myTrial = new Trial(DIFFICULTY);
 			m_vTrials.add(myTrial);
 		}
@@ -139,7 +140,9 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 			m_HandType = m_HandType.next();
 		}
 		
-		m_iCurrentTrial++;
+		if (m_State != State.COMPLETE) {
+			m_iCurrentTrial++;
+		}
 	}
 	
 	private void RestartTrial() {
@@ -158,10 +161,6 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 		Dimension d = getSize();
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, d.width, d.height);
-		doDrawing(g);
-	}
-
-	void doDrawing(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setColor(Color.BLACK);
 
@@ -170,17 +169,6 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 		rh.put(RenderingHints.KEY_RENDERING,
 				RenderingHints.VALUE_RENDER_QUALITY);
 		g2d.setRenderingHints(rh);
-
-		switch (m_State) {
-		case IDLE:
-			break;
-		case COMPLETE:
-			break;
-		case IN_TRIAL:
-			break;
-		default:
-			break;
-		}
 
 		g2d.drawImage(startButton.getImage(), startButton.getX(),
 				startButton.getY(), null);
@@ -199,6 +187,8 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 		g2d.drawString(m_State == State.FAIL ? "TRIAL FAILED" : "", 5, 135);
 		g2d.drawString(m_State == State.IN_TRIAL ? "TRIAL PROGRESS" : "", 5, 155);
 		g2d.drawString(m_State == State.IDLE ? "TRIAL IDLE" : "", 5, 175);
+		g2d.drawString(m_State == State.COMPLETE ? "TRIAL COMPLETE" : "", 5, 195);
+		g2d.drawString("TRIAL #" + (m_iCurrentTrial + 1), 5, 215);
 
 		g2d.setStroke(new BasicStroke(STROKE_WIDTH));
 
@@ -289,38 +279,36 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 	}
 	
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mousePressed(MouseEvent e) {
 		int x = e.getX();
 		int y = e.getY();
 
 		if (startButton.isPressed(x, y)) {
 			Reset();
-			UpdateGraphics();
 		} else if (quitButton.isPressed(x, y)) {
 			System.exit(0);
 		} else if (restartButton.isPressed(x, y)) {
 			m_State = State.IDLE;
 			RestartTrial();
-			UpdateGraphics();
 		} else if (saveButton.isPressed(x, y)) {
 			ExportFile();
 		}
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
+		
+		if (m_ErrorPoint.isValid() && m_State == State.IDLE) {
+			m_ErrorPoint.clearPoint();
+		}
+		
+		int xStart = m_vTrials.get(m_iCurrentTrial).getStartX()*screenWidth / 100;
+		int yStart = m_vTrials.get(m_iCurrentTrial).getStartY()*screenHeight / 100;
+		
+		if (Math.sqrt(Math.pow((x-xStart), 2) + Math.pow((y-yStart), 2)) < STROKE_WIDTH) {
+			if (m_State == State.IDLE) {
+				m_State = State.IN_TRIAL;
+				m_lTrialStartTimer = System.nanoTime();
+			}
+		}
+		
+		UpdateGraphics();
 	}
 
 	@Override
@@ -343,7 +331,7 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 		int yEnd = m_vTrials.get(m_iCurrentTrial).getEndY()*screenHeight / 100;
 
 		if (Math.sqrt(Math.pow((x-xEnd), 2) + Math.pow((y-yEnd), 2)) < STROKE_WIDTH) {
-			if (m_iCurrentTrial == 35) {
+			if (m_iCurrentTrial == TOTAL_TRIALS-1) {
 				m_State = State.COMPLETE;
 			} else {
 				if (m_ErrorPoint.isValid()) {
@@ -405,52 +393,6 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 	}
 
 	@Override
-	public void cursorEntered(TabletEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void cursorExited(TabletEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void cursorGestured(TabletEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void cursorMoved(TabletEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void cursorPressed(TabletEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-		
-		if (m_ErrorPoint.isValid() && m_State == State.IDLE) {
-			m_ErrorPoint.clearPoint();
-		}
-		
-		int xStart = m_vTrials.get(m_iCurrentTrial).getStartX()*screenWidth / 100;
-		int yStart = m_vTrials.get(m_iCurrentTrial).getStartY()*screenHeight / 100;
-		
-		if (Math.sqrt(Math.pow((x-xStart), 2) + Math.pow((y-yStart), 2)) < STROKE_WIDTH) {
-			if (m_State == State.IDLE) {
-				m_State = State.IN_TRIAL;
-				m_lTrialStartTimer = System.nanoTime();
-			}
-		}
-		
-		UpdateGraphics();
-	}
-
-	@Override
 	public void cursorReleased(TabletEvent e) {
 		/*
 		if (m_State == State.IN_TRIAL) {
@@ -464,16 +406,37 @@ public class drawWindow extends Applet implements MouseListener, TabletListener 
 		}
 		*/
 	}
+	
+	@Override
+	public void cursorPressed(TabletEvent e) {}
+	
+	@Override
+	public void cursorEntered(TabletEvent arg0) {}
 
 	@Override
-	public void cursorScrolled(TabletEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void cursorExited(TabletEvent arg0) {}
 
 	@Override
-	public void levelChanged(TabletEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void cursorGestured(TabletEvent arg0) {}
+
+	@Override
+	public void cursorMoved(TabletEvent arg0) {}
+
+	@Override
+	public void cursorScrolled(TabletEvent arg0) {}
+
+	@Override
+	public void levelChanged(TabletEvent arg0) {}
+	
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+
+	@Override
+	public void mouseExited(MouseEvent e) {}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {}
+	
+	@Override
+	public void mouseClicked(MouseEvent e) {}
 }
