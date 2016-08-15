@@ -1,4 +1,4 @@
-Project_Nagem
+MazeTracingTask
 ==============
 
-Project for Undergraduate student Megan
+Java application for windows tablets. Users must trace through a randomly generated maze.
